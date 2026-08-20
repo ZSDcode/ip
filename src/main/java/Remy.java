@@ -1,3 +1,5 @@
+import java.util.Scanner;
+
 public class Remy {
     public static void main(String[] args) {
         String banner = " ____                    \n"
@@ -14,6 +16,15 @@ public class Remy {
             + line;
         System.out.println(Greeting);
         String Goodbye = "Bye, enjoy your day!! \n" + line;
-        System.out.println(Goodbye);
+        Scanner scanner = new Scanner(System.in);
+        while(true) {
+            String newline = scanner.nextLine();
+            if (newline.equals("bye")) {
+                scanner.close();
+                break;
+            }
+            System.out.println(line + newline + '\n' + line);
+        }
+        System.out.println(line + Goodbye);
     }
 }
