@@ -209,7 +209,7 @@ public class Remy {
                                                  r.db.get(idx-1).toString() +
                                                  '\n' + line);
                                      }
-                                         }
+                                 }
                                  else if (newline.length() >= 7 && newline.substring(0, 7).equals("unmark ") && 
                                          newline.substring(7).chars().allMatch(Character::isDigit)) {
                                      if (newline.substring(5).trim().isEmpty()) throw new EmptyStringException("Please key in a number to unmark!");
@@ -222,7 +222,22 @@ public class Remy {
                                                  r.db.get(idx-1).toString() +
                                                  '\n' + line);
                                      }
-                                         }
+                                 }
+                                 else if (newline.length() >= 7 && newline.substring(0, 7).equals("delete ") && 
+                                         newline.substring(7).chars().allMatch(Character::isDigit)) {
+                                     if (newline.substring(5).trim().isEmpty()) throw new EmptyStringException("Please key in a number to delete!");
+                                     int idx = Integer.parseInt(newline.substring(7));
+                                     if (idx > r.db.size() || idx <= 0) throw new MarkOutException();
+                                     else {
+                                         DbItem del = r.db.get(idx-1);
+                                         r.db.remove(idx - 1);
+                                         System.out.println(line + 
+                                                 "Deleted Event Successfully! Keep it up!\n" +
+                                                 del.toString() +
+                                                 '\n');
+                                         System.out.println("Now you have " + r.db.size() + " tasks in the list. \n" + line);
+                                     }
+                                 }
                                  else {
                                      DbItem curr = new DbItem(newline, scanner);
                                      if (curr.getObjective().isEmpty()) throw new EmptyStringException("Please key in an event!");
