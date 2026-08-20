@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.util.ArrayList;
 
 public class Remy {
     public static void main(String[] args) {
@@ -17,13 +18,25 @@ public class Remy {
         System.out.println(Greeting);
         String Goodbye = "Bye, enjoy your day!! \n" + line;
         Scanner scanner = new Scanner(System.in);
+        String prefix = "added: ";
+        ArrayList<String> db = new ArrayList<>();
         while(true) {
             String newline = scanner.nextLine();
-            if (newline.equals("bye")) {
+            if (newline.equals("list")) {
+                System.out.print(line);
+                for (int i = 0; i < db.size(); i++) {
+                    System.out.println(String.format("%d. %s", i, db.get(i)));
+                }
+                System.out.print(line);
+            }
+            else if (newline.equals("bye")) {
                 scanner.close();
                 break;
             }
-            System.out.println(line + newline + '\n' + line);
+            else {
+                db.add(newline);
+                System.out.println(line + prefix + newline + '\n' + line);
+            }
         }
         System.out.println(line + Goodbye);
     }
