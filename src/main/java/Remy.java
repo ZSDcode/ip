@@ -1,5 +1,6 @@
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.util.EmptyStackException;
 
 public class Remy {
     public static String banner = " ____                    \n"
@@ -27,25 +28,17 @@ public class Remy {
         String from;
         String to;
 
-        public DbItem(String o) {
-            if (o.length() > 9 && o.substring(0, 9).equals("deadline ")) {
+        public DbItem(String o, Scanner scanner) throws EmptyStringException {
+            if (o.length() >= 9 && o.substring(0, 9).equals("deadline ")) {
                 this.eventType = ItemType.DEADLINE;
-                if (!o.contains("/")) {
-                    this.objective = o.substring(9);
-                } else {
-                    this.objective = o.substring(9, o.indexOf("/"));
-                }
-            } else if (o.length() > 6 && o.substring(0, 6).equals("event ")) {
+                parseDeadline(o.substring(9), scanner);
+            } else if (o.length() >= 6 && o.substring(0, 6).equals("event ")) {
                 this.eventType = ItemType.EVENT;
-                if (!o.contains("/")) {
-                    this.objective = o.substring(6);
-                } else {
-                    this.objective = o.substring(6, o.indexOf("/"));
-                }
+                parseEvent(o.substring(6), scanner);
             } else {
                 this.eventType = ItemType.TODO;
-                if (o.substring(0, 5).equals("todo ")) {
-                    this.objective = o.substring(4);
+                if (o.length() >= 5 && o.substring(0, 5).equals("todo ")) {
+                    this.objective = o.substring(5);
                 } else {
                     this.objective = o;
                 }
@@ -94,6 +87,87 @@ public class Remy {
                     return "";
             }
         }
+
+        private void parseDeadline(String inp, Scanner scanner) throws EmptyStringException {
+            try {
+                if (inp.contains("/by ")) {
+                    String[] parts = inp.split("/by ", 2);
+                    this.objective = parts[0].trim();
+                    if (parts[1].trim().isEmpty()) {
+                        this.by = prompt(scanner, "By: ");
+                    } else {
+                        this.by = parts[1].trim();
+                    }
+                } else {
+                    this.objective = inp.trim();
+                    this.by = prompt(scanner, "By: ");
+                }
+            }
+            catch (EmptyStringException e) {
+                System.out.print(line + e.getMessage() + '\n' + line);
+            }
+        }
+
+        private void parseEvent(String inp, Scanner scanner) throws EmptyStringException {
+            try {
+                boolean f = inp.contains("/from ");
+                boolean t = inp.contains("/to ");
+                if (!f && !t) {
+                    this.objective = inp.trim();
+                    this.from = prompt(scanner, "From: ");
+                    this.to = prompt(scanner, "To: ");
+                } else if (f && t) {
+                    int idxOfF = inp.indexOf("/from ");
+                    int idxOfT = inp.indexOf("/to ");
+                    String objective = inp.substring(0, Math.min(idxOfF, idxOfT)).trim();
+                    this.objective = objective;
+                    if (idxOfF < idxOfT) {
+                        String from = inp.substring(idxOfF + 6, idxOfT).trim();
+                        if (from.isEmpty()) this.from = prompt(scanner, "From: ");
+                        else this.from = from;
+                        String to = inp.substring(idxOfT + 4).trim();
+                        if (to.isEmpty()) this.to = prompt(scanner, "To: ");
+                        else this.to = to;
+                    } else {
+                        String from = inp.substring(idxOfF + 6).trim();
+                        if (from.isEmpty()) this.from = prompt(scanner, "From: ");
+                        else this.from = from;
+                        String to = inp.substring(idxOfT + 4, idxOfF).trim();
+                        if (to.isEmpty()) this.to = prompt(scanner, "To: ");
+                        else this.to = to;
+                    }
+                } else {
+                    if (f) {
+                        String[] parts = inp.split("/from ", 2);
+                        this.objective = parts[0];
+                        if (parts[1].trim().isEmpty()) this.from = prompt(scanner, "From: ");
+                        else this.from = parts[1];
+                        this.to = prompt(scanner, "To: ");
+                    } else {
+                        String[] parts = inp.split("/to ", 2);
+                        this.objective = parts[0];
+                        if (parts[1].trim().isEmpty()) this.to = prompt(scanner, "To: ");
+                        else this.to = parts[1];
+                        this.from = prompt(scanner, "From: ");
+                    }
+                }
+            } catch (EmptyStringException e) {
+                System.out.print(line + e.getMessage() + "\n" + line);
+            }
+        }
+
+        private String prompt(Scanner scanner, String tag) throws EmptyStringException {
+            while (true) {
+                System.out.print(tag);
+                try {
+                    String response = scanner.nextLine().trim();
+                    if (response.isEmpty()) throw new EmptyStringException("(" + tag.substring(0, tag.length()-2) + ") cannot be empty!");
+                    return response;
+                } catch(EmptyStringException e) {
+                    System.out.print(e.getMessage() + '\n');
+                }
+            }
+        }
     }
 
     public static void main(String[] args) {
@@ -105,95 +179,62 @@ public class Remy {
         Boolean bool = true;
         while(bool) {
             String newline = scanner.nextLine();
-            switch (newline) {
-                case "list": {
-                                 System.out.print(line);
-                                 for (int i = 0; i < r.db.size(); i++) {
-                                     System.out.println(String.format("%d.%s", i+1, r.db.get(i).toString()));
+            try {
+                if (newline.isEmpty()) throw new EmptyStringException("Can't be blank mate!");
+                switch (newline) {
+                    case "list": {
+                                     System.out.print(line);
+                                     for (int i = 0; i < r.db.size(); i++) {
+                                         System.out.println(String.format("%d.%s", i+1, r.db.get(i).toString()));
+                                     }
+                                     System.out.println("Now you have " + r.db.size() + " tasks in the list. \n" + line);
+                                     break;
+                    }
+                    case "bye": {
+                                    scanner.close();
+                                    bool = false;
+                                    System.out.println(line + Goodbye);
+                                    break;
+                    }
+                    default: {
+                                 if (newline.length() >= 5 && newline.substring(0, 5).equals("mark ") && 
+                                         newline.substring(5).chars().allMatch(Character::isDigit)) {
+                                     if (newline.substring(5).trim().isEmpty()) throw new EmptyStringException("Please key in a number to mark!");
+                                     int idx = Integer.parseInt(newline.substring(5));
+                                     if (idx > r.db.size() || idx <= 0) throw new MarkOutException();
+                                     else {
+                                         r.db.get(idx - 1).markDone();
+                                         System.out.println(line + 
+                                                 "Great! Marking as Done...\n" +
+                                                 r.db.get(idx-1).toString() +
+                                                 '\n' + line);
+                                     }
+                                         }
+                                 else if (newline.length() >= 7 && newline.substring(0, 7).equals("unmark ") && 
+                                         newline.substring(7).chars().allMatch(Character::isDigit)) {
+                                     if (newline.substring(5).trim().isEmpty()) throw new EmptyStringException("Please key in a number to unmark!");
+                                     int idx = Integer.parseInt(newline.substring(7));
+                                     if (idx > r.db.size() || idx <= 0) throw new MarkOutException();
+                                     else {
+                                         r.db.get(idx - 1).markUndone();
+                                         System.out.println(line + 
+                                                 "Oops! Getting back to it I see!\n" +
+                                                 r.db.get(idx-1).toString() +
+                                                 '\n' + line);
+                                     }
+                                         }
+                                 else {
+                                     DbItem curr = new DbItem(newline, scanner);
+                                     if (curr.getObjective().isEmpty()) throw new EmptyStringException("Please key in an event!");
+                                     r.db.add(curr);
+                                     System.out.println(line + prefix + curr);
+                                     System.out.println("Now you have " + r.db.size() + " tasks in the list. \n" + line);
                                  }
-                                 System.out.print(line);
                                  break;
+                    }
                 }
-                case "bye": {
-                                scanner.close();
-                                bool = false;
-                                System.out.println(line + Goodbye);
-                                break;
-                }
-                default: {
-                             if (newline.length() > 5 && newline.substring(0, 5).equals("mark ") && 
-                                     newline.substring(5).chars().allMatch(Character::isDigit)) {
-                                 int idx = Integer.parseInt(newline.substring(5));
-                                 if (idx > r.db.size() || idx <= 0) {
-                                     System.out.println(line + 
-                                             "Sir, that's out of the index! Please try again! \n" +
-                                             line);
-                                 } else {
-                                     r.db.get(idx - 1).markDone();
-                                     System.out.println(line + 
-                                             "Great! Marking as Done...\n" +
-                                             r.db.get(idx-1).toString() +
-                                             '\n' + line);
-                                 }
-                             }
-                             else if (newline.length() > 7 && newline.substring(0, 7).equals("unmark ") && 
-                                     newline.substring(7).chars().allMatch(Character::isDigit)) {
-                                 int idx = Integer.parseInt(newline.substring(7));
-                                 if (idx > r.db.size() || idx <= 0) {
-                                     System.out.println(line + 
-                                             "Sir, that's out of the index! Please try again!" +
-                                             line);
-                                 } else {
-                                     r.db.get(idx - 1).markUndone();
-                                     System.out.println(line + 
-                                             "Oops! Getting back to it I see!\n" +
-                                             r.db.get(idx-1).toString() +
-                                             '\n' + line);
-                                 }
-                             }
-                             else {
-                                 DbItem curr = new DbItem(newline);
-                                 if (newline.length() > 9 && newline.substring(0, 9).equals("deadline ")) {
-                                     if (!newline.contains("/by ")) {
-                                         System.out.print("/by ");
-                                         curr.setBy(scanner.nextLine());
-                                     } else {
-                                         curr.setBy(newline.substring(newline.indexOf("/by ") + 4));
-                                     }
-                                 } else if (newline.length() > 6 && newline.substring(0, 6).equals("event ")) {
-                                     boolean f = newline.contains("/from ");
-                                     boolean t = newline.contains("/to ");
-                                     if (!f && !t) {
-                                         System.out.print("/from ");
-                                         curr.setFrom(scanner.nextLine());
-                                         System.out.print("/to ");
-                                         curr.setTo(scanner.nextLine());
-                                     } else if (f && t) {
-                                         if (newline.indexOf("/from ") > newline.indexOf("/to ")) {
-                                             curr.setTo(newline.substring(newline.indexOf("/to ") + 4, newline.indexOf("/from ")));
-                                             curr.setFrom(newline.substring(newline.indexOf("/from ") + 6));
-                                         } else {
-                                             curr.setFrom(newline.substring(newline.indexOf("/from ") + 6, newline.indexOf("/to ")));
-                                             curr.setTo(newline.substring(newline.indexOf("/to ") + 4));
-                                         }
-                                     } else {
-                                         if (f) {
-                                             curr.setFrom(newline.substring(newline.indexOf("/from ") + 6));
-                                             System.out.print("/to ");
-                                             curr.setTo(scanner.nextLine());
-                                         } else {
-                                             curr.setTo(newline.substring(newline.indexOf("/to ") + 4));
-                                             System.out.print("/from ");
-                                             curr.setFrom(scanner.nextLine());
-                                         }
-                                     }
-                                 }
-                                 r.db.add(curr);
-                                 System.out.println(line + prefix + curr);
-                                 System.out.println("Now you have " + r.db.size() + " tasks in the list. \n" + line);
-                             }
-                             break;
-                }
+            } catch (MarkOutException | EmptyStringException e) {
+                System.out.print(line + e.getMessage() + "\n" + line);
             }
         }
     }
