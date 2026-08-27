@@ -11,15 +11,31 @@ import Cxception.EmptyEventException;
 import Cxception.MarkOutException;
 import Cxception.InvalidDateException;
 
+/**
+ * Parses raw user input into commands and dispatches them to a {@link Tasklist}.
+ */
 public class Parser {
     private Tasklist tL;
     private Scanner s;
 
+    /**
+     * Constructs a {@code Parser} bound to the given task list and input scanner.
+     *
+     * @param tL the task list to operate on.
+     * @param s the scanner used to read follow-up prompts from the user.
+     */
     public Parser(Tasklist tL, Scanner s) {
         this.tL = tL;
         this.s = s;
     }
 
+    /**
+     * Parses a single line of user input and executes the corresponding command.
+     * Supported commands: mark, unmark, delete, deadline, event, todo; any other
+     * input is treated as a plain task description.
+     *
+     * @param inp the raw input line entered by the user.
+     */
     public void firstParse(String inp) {
         try {
             inp = inp.trim();
@@ -73,6 +89,11 @@ public class Parser {
         }
     }
 
+    /**
+     * Adds a plain (todo-type) task to the task list.
+     *
+     * @param inp the task description; must be non-empty after trimming.
+     */
     private void addToStruct(String inp) {
         try {
             inp = inp.trim();
@@ -83,6 +104,12 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses a deadline command and adds the resulting task to the task list.
+     * Accepts an inline {@code /by} date, or prompts for one if absent.
+     *
+     * @param inp the command text following the "deadline" keyword.
+     */
     private void parseDeadline(String inp) {
         try {
             String objective;
@@ -103,6 +130,13 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses an event command and adds the resulting task to the task list.
+     * Accepts inline {@code /from} and {@code /to} dates in either order, or
+     * prompts for any that are absent.
+     *
+     * @param inp the command text following the "event" keyword.
+     */
     private void parseEvent(String inp) {
         try {
             String objective;
@@ -147,16 +181,24 @@ public class Parser {
     }
 
     /**
-     * Prompts user for a date/time field, retrying until valid input is given.
+     * Prompts the user for a date/time field, retrying until valid input is given.
+     *
+     * @param tag the prompt label displayed to the user.
+     * @return a validated, non-empty date/time string.
      */
     private String prompt(String tag) {
         return prompt(tag, "");
     }
 
     /**
-     * Prompts user for a date/time field, first validating an existing
-     * candidate (e.g. inline-supplied value) before falling back to
-     * repeated user input on empty/invalid input.
+     * Prompts the user for a date/time field, first validating an existing
+     * candidate (e.g. an inline-supplied value) before falling back to
+     * repeated user input on empty or invalid input.
+     *
+     * @param tag the prompt label displayed to the user.
+     * @param initialCandidate a pre-supplied value to validate before prompting;
+     *                         pass an empty string to prompt immediately.
+     * @return a validated, non-empty date/time string.
      */
     private String prompt(String tag, String initialCandidate) {
         String candidate = initialCandidate;
