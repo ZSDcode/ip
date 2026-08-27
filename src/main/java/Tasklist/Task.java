@@ -67,4 +67,8 @@ public class Task {
     public taskType getCategory() {
         return this.category;
     }
+
+    public boolean contains(String s) {
+        return objective.contains(s);
+    }
 }

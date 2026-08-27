@@ -151,4 +151,14 @@ public class Tasklist {
         }
         return s;
     }
+
+    public void findItems(String search) {
+        String out = "";
+        for (int i = 0; i < this.size; i++) {
+            out += tasklist.get(i).contains(search) ? tasklist.get(i) + "\n" : "";
+        }
+        System.out.print(out.isEmpty() 
+                ? String.format("No tasks with \"%s\"\n", search)
+                : out);
+    }
 }
