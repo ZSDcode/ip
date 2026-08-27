@@ -4,7 +4,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-
 import java.io.File;
 import java.util.Scanner;
 import java.io.FileWriter;
@@ -12,14 +11,25 @@ import java.io.IOException;
 
 import Tasklist.Tasklist;
 
+/**
+ * Handles reading and writing the task list to persistent storage on disk.
+ */
 public class FileManipulator {
     private final static String OS = System.getProperty("os.name").toLowerCase();
     private final static Path BASE_DIR = FileManipulator.resolveBaseDir();
     private final static Path MASTER_PATH = BASE_DIR.resolve("masterTasklist.txt");
     private final static Path TEMP_PATH = BASE_DIR.resolve("tempTasklist.txt");
 
+    /**
+     * Constructs a {@code FileManipulator}.
+     */
     public FileManipulator() { }
 
+    /**
+     * Resolves the OS-appropriate base directory for storing task list data.
+     *
+     * @return the resolved base directory path.
+     */
     private static Path resolveBaseDir() {
         String home = System.getProperty("user.home");
         if (OS.contains("win")) {
@@ -33,6 +43,12 @@ public class FileManipulator {
         }
     }
 
+    /**
+     * Loads the task list from the master save file, creating an empty file
+     * if none exists. Returns an empty task list if loading fails.
+     *
+     * @return the loaded {@code Tasklist}, or an empty one on failure.
+     */
     public static Tasklist loadFile() {
         try {
             if (!Files.exists(MASTER_PATH)) {
@@ -50,6 +66,12 @@ public class FileManipulator {
         }
     }
 
+    /**
+     * Saves the given task list to disk, writing to a temporary file first
+     * before atomically replacing the master save file.
+     *
+     * @param tL the task list to save.
+     */
     public static void saveFile(Tasklist tL) {
         try {
             if (!Files.exists(TEMP_PATH)) {

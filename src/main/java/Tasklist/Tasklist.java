@@ -5,71 +5,105 @@ import java.util.Scanner;
 
 import Cxception.InvalidDateException;
 
+/**
+ * Represents a list of tasks, supporting adding, removing, marking,
+ * and (de)serializing to/from save-file format.
+ */
 public class Tasklist {
     private ArrayList<Task> tasklist;
     private int size = 0;
 
+    /**
+     * Constructs an empty {@code Tasklist}.
+     */
     public Tasklist() {
         this.tasklist = new ArrayList<>();
     }
 
-public Tasklist(Scanner s) {
-    this.tasklist = new ArrayList<>();
-    while (s.hasNextLine()) {
-        String newl = s.nextLine();
-        if (newl.isBlank()) {
-            continue;
-        }
-        String[] parts = newl.split("\\|");
-        for (int i = 0; i < parts.length; i++) {
-            parts[i] = parts[i].trim();
-        }
-        try {
-            switch (parts[0]) {
-                case "T":
-                    this.tasklist.add(new Task(parts[1]));
-                    this.size++;
-                    break;
-                case "D":
-                    this.tasklist.add(new Deadline(parts[1], parts[2]));
-                    this.size++;
-                    break;
-                case "E":
-                    this.tasklist.add(new Event(parts[1], parts[2], parts[3]));
-                    this.size++;
-                    break;
-                default:
-                    System.out.println("Skipping unrecognized line: " + newl);
-                    break;
+    /**
+     * Constructs a {@code Tasklist} by loading tasks from a save-file scanner.
+     * Malformed or unrecognized lines are skipped with a printed warning.
+     *
+     * @param s the scanner reading save-file lines.
+     */
+    public Tasklist(Scanner s) {
+        this.tasklist = new ArrayList<>();
+        while (s.hasNextLine()) {
+            String newl = s.nextLine();
+            if (newl.isBlank()) {
+                continue;
             }
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("Skipping malformed line: " + newl);
-        } catch (InvalidDateException e) {
-            System.out.println("Skipping corrupt saved date: " + newl);
+            String[] parts = newl.split("\\|");
+            for (int i = 0; i < parts.length; i++) {
+                parts[i] = parts[i].trim();
+            }
+            try {
+                switch (parts[0]) {
+                    case "T":
+                        this.tasklist.add(new Task(parts[1]));
+                        this.size++;
+                        break;
+                    case "D":
+                        this.tasklist.add(new Deadline(parts[1], parts[2]));
+                        this.size++;
+                        break;
+                    case "E":
+                        this.tasklist.add(new Event(parts[1], parts[2], parts[3]));
+                        this.size++;
+                        break;
+                    default:
+                        System.out.println("Skipping unrecognized line: " + newl);
+                        break;
+                }
+            } catch (ArrayIndexOutOfBoundsException e) {
+                System.out.println("Skipping malformed line: " + newl);
+            } catch (InvalidDateException e) {
+                System.out.println("Skipping corrupt saved date: " + newl);
+            }
         }
     }
-}
+
+    /**
+     * Returns the string representation of all tasks, numbered for display.
+     *
+     * @return the formatted task list string.
+     */
     @Override
     public String toString() {
         String out = "";
         for (int i = 0; i < this.size; i++) {
-            out += String.format("%d. %s\n", i+1, this.tasklist.get(i));
+            out += String.format("%d. %s\n", i + 1, this.tasklist.get(i));
         }
         return out;
     }
 
+    /**
+     * Returns the number of tasks currently in the list.
+     *
+     * @return the task count.
+     */
     public int getSize() {
         return this.size;
     }
 
+    /**
+     * Adds a task to the list and prints a confirmation message.
+     *
+     * @param t the task to add.
+     */
     public void addItem(Task t) {
         this.tasklist.add(t);
         this.size++;
         System.out.println("You've added a new task! Congrats, more work now :(\n"
-                + t + '\n' 
+                + t + '\n'
                 + String.format("You have %d tasks left! Better get Cracking!\n", this.size));
     }
 
+    /**
+     * Deletes the task at the given index and prints a confirmation message.
+     *
+     * @param idx the zero-based index of the task to delete.
+     */
     public void deleteItem(int idx) {
         Task t = tasklist.get(idx);
         this.tasklist.remove(idx);
@@ -79,14 +113,24 @@ public Tasklist(Scanner s) {
                 + String.format("You have %d tasks left! Better get Cracking!\n", this.size));
     }
 
+    /**
+     * Marks the task at the given index as done and prints a confirmation message.
+     *
+     * @param idx the zero-based index of the task to mark.
+     */
     public void markItem(int idx) {
         Task marked = this.tasklist.get(idx);
         marked.setDone();
         System.out.println("Productive today I see! WHO'S NEXT!!\n"
-                + marked + '\n' 
+                + marked + '\n'
                 + String.format("You have %d tasks left! Better get Cracking!\n", this.size));
     }
 
+    /**
+     * Marks the task at the given index as not done and prints a confirmation message.
+     *
+     * @param idx the zero-based index of the task to unmark.
+     */
     public void unmarkItem(int idx) {
         Task unmarked = this.tasklist.get(idx);
         unmarked.setUndone();
@@ -95,6 +139,11 @@ public Tasklist(Scanner s) {
                 + String.format("You have %d tasks left! Better get Cracking!\n", this.size));
     }
 
+    /**
+     * Returns all tasks serialized into save-file format, one per line.
+     *
+     * @return the save-file formatted string.
+     */
     public String fileFormat() {
         String s = "";
         for (int i = 0; i < this.size; i++) {
