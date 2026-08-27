@@ -63,6 +63,7 @@ public class Parser {
                         addToStruct(inp);
                     }
                 }
+                case "find" -> tL.findItems(restOfCmd);
                 case "deadline" -> parseDeadline(restOfCmd);
                 case "event" -> parseEvent(restOfCmd);
                 case "todo" -> addToStruct(restOfCmd);
