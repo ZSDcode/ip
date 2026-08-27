@@ -3,40 +3,52 @@ package Tasklist;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import Cxception.InvalidDateException;
+
 public class Tasklist {
     private ArrayList<Task> tasklist;
     private int size = 0;
-    public String postfixStr = String.format("You have %d tasks left! Better get Cracking!\n", this.size);
 
     public Tasklist() {
         this.tasklist = new ArrayList<>();
     }
 
-    public Tasklist(Scanner s) {
-        this.tasklist = new ArrayList<>();
-        while(s.hasNextLine()) {
-            String newl = s.nextLine();
-            String[] parts = newl.split("\\|");
-            for (int i = 0; i < parts.length; i++) {
-                parts[i] = parts[i].trim();
-            }
-            switch(parts[0]) {
+public Tasklist(Scanner s) {
+    this.tasklist = new ArrayList<>();
+    while (s.hasNextLine()) {
+        String newl = s.nextLine();
+        if (newl.isBlank()) {
+            continue;
+        }
+        String[] parts = newl.split("\\|");
+        for (int i = 0; i < parts.length; i++) {
+            parts[i] = parts[i].trim();
+        }
+        try {
+            switch (parts[0]) {
                 case "T":
                     this.tasklist.add(new Task(parts[1]));
+                    this.size++;
                     break;
                 case "D":
                     this.tasklist.add(new Deadline(parts[1], parts[2]));
+                    this.size++;
                     break;
                 case "E":
                     this.tasklist.add(new Event(parts[1], parts[2], parts[3]));
+                    this.size++;
                     break;
                 default:
+                    System.out.println("Skipping unrecognized line: " + newl);
                     break;
             }
-            this.size++;
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("Skipping malformed line: " + newl);
+        } catch (InvalidDateException e) {
+            System.out.println("Skipping corrupt saved date: " + newl);
         }
     }
-
+}
     @Override
     public String toString() {
         String out = "";
