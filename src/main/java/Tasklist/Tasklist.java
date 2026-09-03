@@ -5,27 +5,14 @@ import java.util.Scanner;
 
 import Cxception.InvalidDateException;
 
-/**
- * Represents a list of tasks, supporting adding, removing, marking,
- * and (de)serializing to/from save-file format.
- */
 public class Tasklist {
     private ArrayList<Task> tasklist;
     private int size = 0;
 
-    /**
-     * Constructs an empty {@code Tasklist}.
-     */
     public Tasklist() {
         this.tasklist = new ArrayList<>();
     }
 
-    /**
-     * Constructs a {@code Tasklist} by loading tasks from a save-file scanner.
-     * Malformed or unrecognized lines are skipped with a printed warning.
-     *
-     * @param s the scanner reading save-file lines.
-     */
     public Tasklist(Scanner s) {
         this.tasklist = new ArrayList<>();
         while (s.hasNextLine()) {
@@ -63,11 +50,6 @@ public class Tasklist {
         }
     }
 
-    /**
-     * Returns the string representation of all tasks, numbered for display.
-     *
-     * @return the formatted task list string.
-     */
     @Override
     public String toString() {
         String out = "";
@@ -77,73 +59,67 @@ public class Tasklist {
         return out;
     }
 
-    /**
-     * Returns the number of tasks currently in the list.
-     *
-     * @return the task count.
-     */
     public int getSize() {
         return this.size;
     }
 
     /**
-     * Adds a task to the list and prints a confirmation message.
+     * Adds a task to the list and returns a confirmation message.
      *
      * @param t the task to add.
+     * @return the confirmation message.
      */
-    public void addItem(Task t) {
+    public String addItem(Task t) {
         this.tasklist.add(t);
         this.size++;
-        System.out.println("You've added a new task! Congrats, more work now :(\n"
+        return "You've added a new task! Congrats, more work now :(\n"
                 + t + '\n'
-                + String.format("You have %d tasks left! Better get Cracking!\n", this.size));
+                + String.format("You have %d tasks left! Better get Cracking!\n", this.size);
     }
 
     /**
-     * Deletes the task at the given index and prints a confirmation message.
+     * Deletes the task at the given index and returns a confirmation message.
      *
      * @param idx the zero-based index of the task to delete.
+     * @return the confirmation message.
      */
-    public void deleteItem(int idx) {
+    public String deleteItem(int idx) {
         Task t = tasklist.get(idx);
         this.tasklist.remove(idx);
         this.size--;
-        System.out.println("You've deleted a task! Time to sleep! :)\n"
+        return "You've deleted a task! Time to sleep! :)\n"
                 + t + '\n'
-                + String.format("You have %d tasks left! Better get Cracking!\n", this.size));
+                + String.format("You have %d tasks left! Better get Cracking!\n", this.size);
     }
 
     /**
-     * Marks the task at the given index as done and prints a confirmation message.
+     * Marks the task at the given index as done and returns a confirmation message.
      *
      * @param idx the zero-based index of the task to mark.
+     * @return the confirmation message.
      */
-    public void markItem(int idx) {
+    public String markItem(int idx) {
         Task marked = this.tasklist.get(idx);
         marked.setDone();
-        System.out.println("Productive today I see! WHO'S NEXT!!\n"
+        return "Productive today I see! WHO'S NEXT!!\n"
                 + marked + '\n'
-                + String.format("You have %d tasks left! Better get Cracking!\n", this.size));
+                + String.format("You have %d tasks left! Better get Cracking!\n", this.size);
     }
 
     /**
-     * Marks the task at the given index as not done and prints a confirmation message.
+     * Marks the task at the given index as not done and returns a confirmation message.
      *
      * @param idx the zero-based index of the task to unmark.
+     * @return the confirmation message.
      */
-    public void unmarkItem(int idx) {
+    public String unmarkItem(int idx) {
         Task unmarked = this.tasklist.get(idx);
         unmarked.setUndone();
-        System.out.println("THERE'S MORE??? Toughies, there there...\n"
+        return "THERE'S MORE??? Toughies, there there...\n"
                 + unmarked + '\n'
-                + String.format("You have %d tasks left! Better get Cracking!\n", this.size));
+                + String.format("You have %d tasks left! Better get Cracking!\n", this.size);
     }
 
-    /**
-     * Returns all tasks serialized into save-file format, one per line.
-     *
-     * @return the save-file formatted string.
-     */
     public String fileFormat() {
         String s = "";
         for (int i = 0; i < this.size; i++) {
@@ -152,13 +128,19 @@ public class Tasklist {
         return s;
     }
 
-    public void findItems(String search) {
+    /**
+     * Returns tasks matching the search term, formatted for display.
+     *
+     * @param search the search term.
+     * @return the matching tasks, or a "no tasks found" message.
+     */
+    public String findItems(String search) {
         String out = "";
         for (int i = 0; i < this.size; i++) {
             out += tasklist.get(i).contains(search) ? tasklist.get(i) + "\n" : "";
         }
-        System.out.print(out.isEmpty() 
+        return out.isEmpty()
                 ? String.format("No tasks with \"%s\"\n", search)
-                : out);
+                : out;
     }
 }
