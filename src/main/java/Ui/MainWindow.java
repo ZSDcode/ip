@@ -20,6 +20,13 @@ public class MainWindow {
 
     @FXML
     public void initialize() {
+        assert scrollPane != null : "scrollPane not injected";
+        assert dialogContainer != null : "dialogContainer not injected";
+        assert userInput != null : "userInput not injected";
+        assert sendButton != null : "sendButton not injected";
+        assert userImage != null : "userImage failed to load";
+        assert remyImage != null : "remyImage failed to load";
+
         scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
         dialogContainer.getChildren().add(
             DialogBox.getRemyDialog("Hello! I'm Remy, your friendly reminder app!\nHow can I help you today?", remyImage)
@@ -27,14 +34,20 @@ public class MainWindow {
     }
 
     public void setRemy(Remy r) {
+        assert r != null : "Remy null";
         remy = r;
     }
 
     @FXML
     private void handleUserInput() {
+        assert remy != null : "remy not set -> call setRemy first";
+
         String input = userInput.getText();
         if (input.isBlank()) return;
+
         String response = remy.getResponse(input);
+        assert response != null : "response null";
+
         dialogContainer.getChildren().addAll(
             DialogBox.getUserDialog(input, userImage),
             DialogBox.getRemyDialog(response, remyImage)

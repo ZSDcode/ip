@@ -14,6 +14,9 @@ public class DialogBox extends HBox {
     @FXML private ImageView displayPicture;
 
     private DialogBox(String text, Image img) {
+        assert text != null : "text null";
+        assert img != null : "img null";
+
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(MainWindow.class.getResource("/view/DialogBox.fxml"));
             fxmlLoader.setController(this);
@@ -22,22 +25,34 @@ public class DialogBox extends HBox {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        assert dialog != null : "dialog Label not injected -> FXML load failed";
+        assert displayPicture != null : "displayPicture ImageView not injected -> FXML load failed";
+
         dialog.setText(text);
         displayPicture.setImage(img);
     }
 
     private void flip() {
+        assert !getChildren().isEmpty() : "no children -> flip invalid";
+
         setAlignment(Pos.TOP_LEFT);
         java.util.List<javafx.scene.Node> tmp = new java.util.ArrayList<>(getChildren());
         java.util.Collections.reverse(tmp);
         getChildren().setAll(tmp);
+
+        assert getChildren().size() == tmp.size() : "child count changed after flip";
     }
 
     public static DialogBox getUserDialog(String text, Image img) {
+        assert text != null : "text null";
+        assert img != null : "img null";
         return new DialogBox(text, img);
     }
 
     public static DialogBox getRemyDialog(String text, Image img) {
+        assert text != null : "text null";
+        assert img != null : "img null";
         DialogBox db = new DialogBox(text, img);
         db.flip();
         return db;
