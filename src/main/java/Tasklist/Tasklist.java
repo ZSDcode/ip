@@ -41,7 +41,8 @@ public class Tasklist {
             try {
                 switch (parts[0]) {
                     case "T":
-                        this.tasklist.add(new Task(parts[1]));
+                        String savedPlace = parts.length > 2 ? parts[2] : null;
+                        this.tasklist.add(new Task(parts[1], savedPlace));
                         this.size++;
                         break;
                     case "D":
