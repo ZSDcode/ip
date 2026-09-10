@@ -5,14 +5,28 @@ import java.util.Scanner;
 
 import Cxception.InvalidDateException;
 
+/**
+ * Represents an ordered collection of {@link Task} objects, supporting add, delete,
+ * mark/unmark, search, and loading from a saved file format.
+ */
 public class Tasklist {
     private ArrayList<Task> tasklist;
     private int size = 0;
 
+    /**
+     * Constructs an empty task list.
+     */
     public Tasklist() {
         this.tasklist = new ArrayList<>();
     }
 
+    /**
+     * Constructs a task list by reading saved tasks from the given scanner.
+     * Each line is expected in pipe-delimited save format ("T|...", "D|...", "E|...").
+     * Malformed or unrecognized lines are skipped with a console message.
+     *
+     * @param s the scanner to read saved task data from.
+     */
     public Tasklist(Scanner s) {
         this.tasklist = new ArrayList<>();
         while (s.hasNextLine()) {
@@ -50,6 +64,11 @@ public class Tasklist {
         }
     }
 
+    /**
+     * Returns a numbered, newline-separated string representation of all tasks in the list.
+     *
+     * @return the formatted task list.
+     */
     @Override
     public String toString() {
         String out = "";
@@ -59,6 +78,11 @@ public class Tasklist {
         return out;
     }
 
+    /**
+     * Returns the number of tasks currently in the list.
+     *
+     * @return the task count.
+     */
     public int getSize() {
         return this.size;
     }
@@ -120,6 +144,11 @@ public class Tasklist {
                 + String.format("You have %d tasks left! Better get Cracking!\n", this.size);
     }
 
+    /**
+     * Returns all tasks formatted for writing to the save file.
+     *
+     * @return the file-format representation of all tasks.
+     */
     public String fileFormat() {
         String s = "";
         for (int i = 0; i < this.size; i++) {
