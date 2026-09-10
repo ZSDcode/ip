@@ -11,12 +11,20 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
+        assert stage != null : "stage null";
+
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/view/MainWindow.fxml"));
             AnchorPane ap = fxmlLoader.load();
+            assert ap != null : "AnchorPane load failed";
+
             Scene scene = new Scene(ap);
             stage.setScene(scene);
-            fxmlLoader.<MainWindow>getController().setRemy(remy);
+
+            MainWindow controller = fxmlLoader.getController();
+            assert controller != null : "controller null -> FXML load failed";
+
+            controller.setRemy(remy);
             stage.show();
         } catch (Exception e) {
             e.printStackTrace();
