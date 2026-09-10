@@ -75,15 +75,25 @@ public class Parser {
 
     /**
      * Adds a plain (non-deadline, non-event) task to the task list.
+     * Optionally parses a trailing "/at <place>" to attach a place.
      *
-     * @param inp the task description.
+     * @param inp the task description, optionally containing "/at <place>".
      * @return the confirmation message, or an error message if the input is empty.
      */
     private String addToStruct(String inp) {
         try {
             inp = inp.trim();
             if (inp.isEmpty()) throw new EmptyEventException();
-            return tL.addItem(new Task(inp));
+
+            String place = null;
+            if (inp.contains("/at ")) {
+                String[] parts = inp.split("/at ", 2);
+                inp = parts[0].trim();
+                place = parts[1].trim();
+                if (inp.isEmpty()) throw new EmptyEventException();
+            }
+
+            return tL.addItem(new Task(inp, place));
         } catch (EmptyEventException e) {
             return e.getMessage();
         }
