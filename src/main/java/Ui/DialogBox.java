@@ -9,10 +9,20 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
+/**
+ * Represents a chat bubble containing a dialog label and a display picture,
+ * used to render user and bot messages in the chat window.
+ */
 public class DialogBox extends HBox {
     @FXML private Label dialog;
     @FXML private ImageView displayPicture;
 
+    /**
+     * Constructs a DialogBox loaded from FXML, displaying the given text and image.
+     *
+     * @param text the message text to display.
+     * @param img the display picture (avatar) to show alongside the text.
+     */
     private DialogBox(String text, Image img) {
         assert text != null : "text null";
         assert img != null : "img null";
@@ -33,6 +43,10 @@ public class DialogBox extends HBox {
         displayPicture.setImage(img);
     }
 
+    /**
+     * Flips the dialog box so the picture appears on the left and text on the right,
+     * used to visually distinguish bot messages from user messages.
+     */
     private void flip() {
         assert !getChildren().isEmpty() : "no children -> flip invalid";
 
@@ -44,12 +58,27 @@ public class DialogBox extends HBox {
         assert getChildren().size() == tmp.size() : "child count changed after flip";
     }
 
+    /**
+     * Creates a dialog box representing a message from the user.
+     *
+     * @param text the message text.
+     * @param img the user's display picture.
+     * @return the constructed DialogBox.
+     */
     public static DialogBox getUserDialog(String text, Image img) {
         assert text != null : "text null";
         assert img != null : "img null";
         return new DialogBox(text, img);
     }
 
+    /**
+     * Creates a dialog box representing a message from Remy, flipped to appear
+     * on the opposite side from user messages.
+     *
+     * @param text the message text.
+     * @param img Remy's display picture.
+     * @return the constructed, flipped DialogBox.
+     */
     public static DialogBox getRemyDialog(String text, Image img) {
         assert text != null : "text null";
         assert img != null : "img null";

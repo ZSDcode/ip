@@ -9,13 +9,29 @@ import Cxception.EmptyEventException;
 import Cxception.MarkOutException;
 import Cxception.InvalidDateException;
 
+/**
+ * Parses raw user input strings into commands and executes them against a {@link Tasklist}.
+ */
 public class Parser {
     private Tasklist tL;
 
+    /**
+     * Constructs a Parser bound to the given task list.
+     *
+     * @param tL the task list to operate on.
+     */
     public Parser(Tasklist tL) {
         this.tL = tL;
     }
 
+    /**
+     * Parses the given input string, identifies the command, and executes it.
+     * Supported commands: mark, unmark, delete, find, deadline, event, todo.
+     * Any unrecognized command is treated as a plain task to add.
+     *
+     * @param inp the raw user input.
+     * @return the response message to display to the user.
+     */
     public String firstParse(String inp) {
         try {
             inp = inp.trim();
@@ -57,6 +73,12 @@ public class Parser {
         }
     }
 
+    /**
+     * Adds a plain (non-deadline, non-event) task to the task list.
+     *
+     * @param inp the task description.
+     * @return the confirmation message, or an error message if the input is empty.
+     */
     private String addToStruct(String inp) {
         try {
             inp = inp.trim();
@@ -67,6 +89,12 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses a deadline command of the form {@code <task> /by <date>} and adds it to the task list.
+     *
+     * @param inp the input following the "deadline" keyword.
+     * @return the confirmation message, or an error message if parsing fails.
+     */
     private String parseDeadline(String inp) {
         try {
             if (!inp.contains("/by ")) {
@@ -83,6 +111,13 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses an event command of the form {@code <task> /from <date> /to <date>} and adds it to the task list.
+     * The /from and /to markers may appear in either order.
+     *
+     * @param inp the input following the "event" keyword.
+     * @return the confirmation message, or an error message if parsing fails.
+     */
     private String parseEvent(String inp) {
         try {
             boolean f = inp.contains("/from ");
@@ -109,6 +144,14 @@ public class Parser {
         }
     }
 
+    /**
+     * Validates and returns a non-empty, parseable date candidate string.
+     *
+     * @param candidate the raw date string to validate.
+     * @return the validated date string.
+     * @throws EmptyEventException if the candidate is empty.
+     * @throws InvalidDateException if the candidate cannot be parsed as a date.
+     */
     private String validate(String candidate) throws EmptyEventException, InvalidDateException {
         if (candidate.isEmpty()) throw new EmptyEventException();
         DateTimeParser.parse(candidate);
