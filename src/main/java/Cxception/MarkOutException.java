@@ -1,12 +1,11 @@
 package Cxception;
 
 /**
- * Signals that the user is accessing an out of index item
+ * Thrown when accessing an out-of-bounds index.
  */
 public class MarkOutException extends Exception {
     /**
-     * Constructs an {@code MarkOutException} with a default message
-     * describing the out of index error to the user.
+     * Constructs a {@code MarkOutException} with a default out-of-bounds message.
      */
     public MarkOutException() {
         super("Can't access this index!");
