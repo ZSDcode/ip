@@ -51,7 +51,7 @@ public class Parser {
                     if (idxInConsideration > tL.getSize() || idxInConsideration <= 0) {
                         throw new MarkOutException();
                     }
-                    return tL.markItem(idxInConsideration - 1);
+                    return "Marked, just for you~ " + tL.markItem(idxInConsideration - 1);
                 case "unmark":
                     if (!isNum) {
                         return addToStruct(inp);
@@ -59,7 +59,7 @@ public class Parser {
                     if (idxInConsideration > tL.getSize() || idxInConsideration <= 0) {
                         throw new MarkOutException();
                     }
-                    return tL.unmarkItem(idxInConsideration - 1);
+                    return "Unmarked. I'll remember it anyway. " + tL.unmarkItem(idxInConsideration - 1);
                 case "delete":
                     if (!isNum) {
                         return addToStruct(inp);
@@ -67,7 +67,7 @@ public class Parser {
                     if (idxInConsideration > tL.getSize() || idxInConsideration <= 0) {
                         throw new MarkOutException();
                     }
-                    return tL.deleteItem(idxInConsideration - 1);
+                    return "...gone. " + tL.deleteItem(idxInConsideration - 1) + " But don't worry, I'm still here.";
                 case "find":
                     return tL.findItems(restOfCmd);
                 case "deadline":
@@ -107,7 +107,8 @@ public class Parser {
                 }
             }
 
-            return tL.addItem(new Task(inp, place));
+            tL.addItem(new Task(inp, place));
+            return "Of course, my love~ \"" + inp + "\" has been added, just as you wished.";
         } catch (EmptyEventException e) {
             return e.getMessage();
         }
@@ -122,7 +123,7 @@ public class Parser {
     private String parseDeadline(String inp) {
         try {
             if (!inp.contains("/by ")) {
-                return "Missing /by <date>. Usage: deadline <task> /by <date>";
+                return "You forgot the /by <date>... I'll wait as long as you need. Usage: deadline <task> /by <date>";
             }
             String[] parts = inp.split("/by ", 2);
             String objective = parts[0].trim();
@@ -131,7 +132,7 @@ public class Parser {
             }
             String by = validate(parts[1].trim());
             tL.addItem(new Deadline(objective, by));
-            return "Added deadline: " + objective + " (by " + by + ")";
+            return "I'll never let you forget: \"" + objective + "\" by " + by + ". I promise.";
         } catch (EmptyEventException | InvalidDateException e) {
             return e.getMessage();
         }
@@ -149,7 +150,7 @@ public class Parser {
             boolean f = inp.contains("/from ");
             boolean t = inp.contains("/to ");
             if (!f || !t) {
-                return "Missing /from or /to. Usage: event <task> /from <date> /to <date>";
+                return "Missing /from or /to... don't leave me guessing. Usage: event <task> /from <date> /to <date>";
             }
             int fIdx = inp.indexOf("/from ");
             int tIdx = inp.indexOf("/to ");
@@ -167,7 +168,7 @@ public class Parser {
                 throw new EmptyEventException();
             }
             tL.addItem(new Event(objective, from, to));
-            return "Added event: " + objective + " (from " + from + " to " + to + ")";
+            return "Marked in my heart and the list: \"" + objective + "\" (" + from + " to " + to + ").";
         } catch (EmptyEventException | InvalidDateException e) {
             return e.getMessage();
         }

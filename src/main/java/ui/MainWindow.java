@@ -37,8 +37,10 @@ public class MainWindow {
 
         scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
         dialogContainer.getChildren().add(
-            DialogBox.getRemyDialog("Hello! I'm Remy, "
-                + "your friendly reminder app!\nHow can I help you today?", remyImage)
+            DialogBox.getRemyDialog(
+                "You're here! I've been waiting~ I'm Remy, and I'll take care of everything for you.\nWhat can I do?",
+                remyImage
+            )
         );
     }
 
