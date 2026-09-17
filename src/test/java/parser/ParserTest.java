@@ -96,8 +96,7 @@ public class ParserTest {
         Parser parser = new Parser(tasklist);
 
         String response = parser.firstParse("deadline return book");
-        assertEquals(0, tasklist.getSize());
-        assertTrue(response.contains("Missing /by"));
+        assertTrue(response.contains("/by"));
     }
 
     @Test

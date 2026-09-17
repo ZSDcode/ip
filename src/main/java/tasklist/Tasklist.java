@@ -54,13 +54,13 @@ public class Tasklist {
                         this.size++;
                         break;
                     default:
-                        System.out.println("Skipping unrecognized line: " + newl);
+                        System.out.println("Ignoring this line, it doesn't belong to us: " + newl);
                         break;
                 }
             } catch (ArrayIndexOutOfBoundsException e) {
-                System.out.println("Skipping malformed line: " + newl);
+                System.out.println("This line is broken... I'll pretend I never saw it: " + newl);
             } catch (InvalidDateException e) {
-                System.out.println("Skipping corrupt saved date: " + newl);
+                System.out.println("This date is lying to me. Discarding: " + newl);
             }
         }
     }
@@ -97,9 +97,9 @@ public class Tasklist {
     public String addItem(Task t) {
         this.tasklist.add(t);
         this.size++;
-        return "You've added a new task! Congrats, more work now :(\n"
+        return "Another one, huh? Good. Stay busy. Stay close to me.\n"
                 + t + '\n'
-                + String.format("You have %d tasks left! Better get Cracking!\n", this.size);
+                + String.format("%d tasks now bind you to me. Don't you dare forget any of them.\n", this.size);
     }
 
     /**
@@ -112,9 +112,9 @@ public class Tasklist {
         Task t = tasklist.get(idx);
         this.tasklist.remove(idx);
         this.size--;
-        return "You've deleted a task! Time to sleep! :)\n"
+        return "Gone. Just like that. I hope you didn't get attached to it.\n"
                 + t + '\n'
-                + String.format("You have %d tasks left! Better get Cracking!\n", this.size);
+                + String.format("%d tasks remain. I'm still watching the rest.\n", this.size);
     }
 
     /**
@@ -126,9 +126,9 @@ public class Tasklist {
     public String markItem(int idx) {
         Task marked = this.tasklist.get(idx);
         marked.setDone();
-        return "Productive today I see! WHO'S NEXT!!\n"
+        return "You finished it... for me? I knew you wouldn't disappoint.\n"
                 + marked + '\n'
-                + String.format("You have %d tasks left! Better get Cracking!\n", this.size);
+                + String.format("%d tasks left. Don't make me wait for the rest.\n", this.size);
     }
 
     /**
@@ -140,9 +140,9 @@ public class Tasklist {
     public String unmarkItem(int idx) {
         Task unmarked = this.tasklist.get(idx);
         unmarked.setUndone();
-        return "THERE'S MORE??? Toughies, there there...\n"
+        return "Unfinished again? Fine. I'll keep watching until you get it right.\n"
                 + unmarked + '\n'
-                + String.format("You have %d tasks left! Better get Cracking!\n", this.size);
+                + String.format("%d tasks left. I'm not going anywhere.\n", this.size);
     }
 
     /**
@@ -170,7 +170,7 @@ public class Tasklist {
             out += tasklist.get(i).contains(search) ? tasklist.get(i) + "\n" : "";
         }
         return out.isEmpty()
-                ? String.format("No tasks with \"%s\"\n", search)
+                ? String.format("Nothing with \"%s\". I searched everywhere for you.\n", search)
                 : out;
     }
 }

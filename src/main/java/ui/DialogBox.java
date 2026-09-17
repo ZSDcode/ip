@@ -51,13 +51,11 @@ public class DialogBox extends HBox {
      */
     private void flip() {
         assert !getChildren().isEmpty() : "no children -> flip invalid";
-
-            setAlignment(Pos.TOP_LEFT);
-            FXCollections.reverse(getChildren());
-
-            assert getChildren().size() == 2 : "child count changed after flip";
+        setAlignment(Pos.TOP_LEFT);
+        FXCollections.reverse(getChildren());
+        assert getChildren().size() == 2 : "child count changed after flip";
     }
-    
+
     /**
      * Creates a dialog box representing a message from the user.
      *
