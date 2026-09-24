@@ -18,18 +18,19 @@ dependencies {
     String jUnitVersion = '5.14.4'
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:${jUnitVersion}"
-
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${jUnitVersion}"
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.14.4'
 
     String javaFxVersion = '17.0.7'
+    def javafxModules = ['base', 'controls', 'fxml', 'graphics']
+    def platforms = ['linux', 'win', 'mac']
 
-    implementation("org.openjfx:javafx-base:${javaFxVersion}:linux")
-    implementation("org.openjfx:javafx-controls:${javaFxVersion}:linux")
-    implementation("org.openjfx:javafx-fxml:${javaFxVersion}:linux")
-    implementation("org.openjfx:javafx-graphics:${javaFxVersion}:linux")
+    javafxModules.each { module ->
+        platforms.each { platform ->
+            implementation "org.openjfx:javafx-${module}:${javaFxVersion}:${platform}"
+        }
+    }
 }
-
 test {
     useJUnitPlatform()
 
