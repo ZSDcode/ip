@@ -64,6 +64,14 @@ public class Ui {
         ui.reader = LineReaderBuilder.builder().terminal(ui.terminal).build();
         ui.p = new Parser(ui.tL, ui.reader);
 
+        // Saves tasks on graceful termination too (OS shutdown, logout, Ctrl+C
+        // at the OS level, `kill`) — not just when the user types "bye"/"exit".
+        // Can't catch a hard power cut or `kill -9`; nothing running in the JVM can.
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            FileManipulator.saveFile(ui.tL);
+        }));
+
+
         displayGreet();
         String nextL = ui.readCommand();
         try {
