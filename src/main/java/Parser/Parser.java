@@ -1,6 +1,8 @@
 package Parser;
 
-import java.util.Scanner;
+import org.jline.reader.EndOfFileException;
+import org.jline.reader.LineReader;
+import org.jline.reader.UserInterruptException;
 
 import Tasklist.Tasklist;
 import Tasklist.Task;
@@ -13,11 +15,11 @@ import Cxception.InvalidDateException;
 
 public class Parser {
     private Tasklist tL;
-    private Scanner s;
+    private LineReader reader;
 
-    public Parser(Tasklist tL, Scanner s) {
+    public Parser(Tasklist tL, LineReader reader) {
         this.tL = tL;
-        this.s = s;
+        this.reader = reader;
     }
 
     public void firstParse(String inp) {
@@ -53,7 +55,7 @@ public class Parser {
                         addToStruct(inp);
                     }
                 }
-                case "delete" -> {
+                case "del" -> {
                     if (isNum) {
                         if (idxInConsideration > tL.getSize() || idxInConsideration <= 0) {
                             throw new MarkOutException();
@@ -164,11 +166,12 @@ public class Parser {
         while (true) {
             try {
                 if (candidate.isEmpty()) {
-                    System.out.print(tag);
-                    if (!s.hasNextLine()) {
+                    try {
+                        candidate = this.reader.readLine(tag).trim();
+                    } catch (UserInterruptException | EndOfFileException e) {
+                        candidate = "";
                         continue;
                     }
-                    candidate = this.s.nextLine().trim();
                 }
                 if (candidate.isEmpty()) throw new EmptyEventException();
                 DateTimeParser.parse(candidate);

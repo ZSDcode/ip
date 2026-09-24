@@ -16,6 +16,8 @@ repositories {
 dependencies {
     String jUnitVersion = '5.14.4'
 
+    implementation 'org.jline:jline:3.26.3'
+
     testImplementation "org.junit.jupiter:junit-jupiter-api:${jUnitVersion}"
 
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${jUnitVersion}"
@@ -53,4 +55,6 @@ shadowJar {
 
 run {
     standardInput = System.in
+    standardOutput = System.out
+    errorOutput = System.err
 }

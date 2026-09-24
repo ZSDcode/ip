@@ -2,6 +2,6 @@ package Cxception;
 
 public class MarkOutException extends Exception {
     public MarkOutException() {
-        super("Can't access this index!");
+        super("That index doesn't exist for you. I decide what you're allowed to reach.");
     }
 }

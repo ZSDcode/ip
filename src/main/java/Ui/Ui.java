@@ -1,6 +1,11 @@
 package Ui;
 
-import java.util.Scanner;
+import org.jline.reader.EndOfFileException;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.UserInterruptException;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
 
 import Tasklist.Tasklist;
 import Parser.Parser;
@@ -18,7 +23,8 @@ public class Ui {
         + "How can I help you today?\n" + line;
     private static String goodbye = "Bye, enjoy your day!! \n" + line;
     private Tasklist tL;
-    private Scanner s;
+    private Terminal terminal;
+    private LineReader reader;
     private Parser p;
 
     public static void display(String s) {
@@ -28,31 +34,57 @@ public class Ui {
     public static void displayGreet() {
         System.out.println(Ui.banner + Ui.greeting);
     }
-    
+
     public static void displayGoodbye() {
         System.out.println(Ui.goodbye);
+    }
+
+    /**
+     * Reads one line of input, with up/down arrow history navigation.
+     * Returns "bye" on Ctrl+C / Ctrl+D so the main loop exits cleanly.
+     */
+    private String readCommand() {
+        try {
+            return this.reader.readLine("> ");
+        } catch (UserInterruptException | EndOfFileException e) {
+            return "bye";
+        }
     }
 
     public static void main(String[] args) {
         Ui ui = new Ui();
         ui.tL = FileManipulator.loadFile();
-        ui.s = new Scanner(System.in);
-        ui.p = new Parser(ui.tL, ui.s);
-        displayGreet();
-        String nextL = ui.s.nextLine();
+
         try {
-            while (!nextL.equals("bye")) {
-                if (nextL.equals("list")) {
+            ui.terminal = TerminalBuilder.builder().system(true).build();
+        } catch (java.io.IOException e) {
+            System.out.println("Couldn't start terminal: " + e.getMessage());
+            return;
+        }
+        ui.reader = LineReaderBuilder.builder().terminal(ui.terminal).build();
+        ui.p = new Parser(ui.tL, ui.reader);
+
+        displayGreet();
+        String nextL = ui.readCommand();
+        try {
+            while (!nextL.equals("bye") && !nextL.equals("q") && !nextL.equals("exit")) {
+                if (nextL.equals("ls")) {
                     System.out.print(ui.tL);
+                } else if (nextL.equals("clear")) {
+                    ui.tL.clearItems();
                 } else {
                     ui.p.firstParse(nextL);
                 }
                 System.out.print(line);
-                nextL = ui.s.nextLine();
+                nextL = ui.readCommand();
             }
         } finally {
             FileManipulator.saveFile(ui.tL);
-            ui.s.close();
+            try {
+                ui.terminal.close();
+            } catch (java.io.IOException e) {
+                // ignore close failure on exit
+            }
         }
         displayGoodbye();
     }
