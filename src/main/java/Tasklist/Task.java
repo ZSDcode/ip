@@ -20,7 +20,7 @@ public class Task {
     }
 
     public String fileFormatText() {
-        return String.format("T | %s", this.objective);
+        return String.format("T | %s | %s", this.done ? "X" : " ", this.objective);
     }
 
     public void setDone() {

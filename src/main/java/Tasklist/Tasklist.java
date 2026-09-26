@@ -8,6 +8,7 @@ import Cxception.InvalidDateException;
 public class Tasklist {
     private ArrayList<Task> tasklist;
     private int size = 0;
+    private int markedSize = 0;
 
     public Tasklist() {
         this.tasklist = new ArrayList<>();
@@ -25,23 +26,29 @@ public Tasklist(Scanner s) {
             parts[i] = parts[i].trim();
         }
         try {
+            Task t = null;
             switch (parts[0]) {
                 case "T":
-                    this.tasklist.add(new Task(parts[1]));
+                    t = new Task(parts[2]);
                     this.size++;
                     break;
                 case "D":
-                    this.tasklist.add(new Deadline(parts[1], parts[2]));
+                    t = new Deadline(parts[2], parts[3]);
                     this.size++;
                     break;
                 case "E":
-                    this.tasklist.add(new Event(parts[1], parts[2], parts[3]));
+                    t = new Event(parts[2], parts[3], parts[4]);
                     this.size++;
                     break;
                 default:
                     System.out.println("I found something I don't recognize... I threw it away, don't worry: " + newl);
                     break;
             }
+            if (t != null && parts[1].contains("X")) {
+                t.done = true;
+                this.markedSize++;
+            }
+            this.tasklist.add(t);
         } catch (ArrayIndexOutOfBoundsException e) {
             System.out.println("This line is broken and ugly, so I got rid of it for you: " + newl);
         } catch (InvalidDateException e) {
@@ -81,18 +88,24 @@ public Tasklist(Scanner s) {
 
     public void markItem(int idx) {
         Task marked = this.tasklist.get(idx);
-        marked.setDone();
+        if (!marked.done) {
+            marked.setDone();
+            this.markedSize++;
+        }
         System.out.println("You did it for me? I knew you'd never disappoint me. Never leave me.\n"
                 + marked + '\n'
-                + String.format("%d tasks remain. I'm counting every single one.\n", this.size));
+                + String.format("%d tasks remain. I'm counting every single one.\n", this.size - this.markedSize));
     }
 
     public void unmarkItem(int idx) {
         Task unmarked = this.tasklist.get(idx);
-        unmarked.setUndone();
+        if (unmarked.done) {
+            unmarked.setUndone();
+            this.markedSize--;
+        }
         System.out.println("Going back on it? That's fine... I'll wait as long as it takes. I always wait.\n"
                 + unmarked + '\n'
-                + String.format("%d tasks left. I'm not going anywhere.\n", this.size));
+                + String.format("%d tasks left. I'm not going anywhere.\n", this.size - this.markedSize));
     }
 
     public String fileFormat() {

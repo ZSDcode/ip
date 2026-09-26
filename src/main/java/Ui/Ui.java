@@ -6,6 +6,7 @@ import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.UserInterruptException;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
+import org.jline.utils.InfoCmp.Capability;
 
 import Tasklist.Tasklist;
 import Parser.Parser;
@@ -51,6 +52,12 @@ public class Ui {
         }
     }
 
+    private void clearScreen() {
+        this.terminal.puts(Capability.clear_screen);
+        this.terminal.flush();
+        displayGreet();
+    }
+
     public static void main(String[] args) {
         Ui ui = new Ui();
         ui.tL = FileManipulator.loadFile();
@@ -78,12 +85,13 @@ public class Ui {
             while (!nextL.equals("bye") && !nextL.equals("q") && !nextL.equals("exit")) {
                 if (nextL.equals("ls")) {
                     System.out.print(ui.tL);
-                } else if (nextL.equals("clear")) {
-                    ui.tL.clearItems();
+                    System.out.print(line);
+                } else if (nextL.equals("clear") || nextL.equals("cls")) {
+                    ui.clearScreen();
                 } else {
                     ui.p.firstParse(nextL);
+                    System.out.print(line);
                 }
-                System.out.print(line);
                 nextL = ui.readCommand();
             }
         } finally {

@@ -62,7 +62,11 @@ public class Parser {
                         }
                         tL.deleteItem(idxInConsideration - 1);
                     } else {
-                        addToStruct(inp);
+                        if (restOfCmd.equals("all")) {
+                            System.out.println("Everyone else... gone? Are you sure? Say yes, and it's just us. (y/n)");
+                            if (reader.readLine("> ").equals("y")) tL.clearItems();
+                        }
+                        else addToStruct(inp);
                     }
                 }
                 case "find" -> tL.findItems(restOfCmd);

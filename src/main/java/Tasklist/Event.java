@@ -22,6 +22,6 @@ public class Event extends Task {
 
     @Override
     public String fileFormatText() {
-        return String.format("E | %s | %s | %s", super.objective, from.toFileString(), to.toFileString());
+        return String.format("E | %s | %s | %s | %s", super.done ? "X" : " ", super.objective, from.toFileString(), to.toFileString());
     }
 }
